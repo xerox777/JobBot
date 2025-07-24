@@ -4,5 +4,9 @@ config.yaml
 # Ignore Python Cache
 __pychace__/
 *.pyc
-
+# Ignore captcha pycache
+captcha/__pycache__
 venv/
+chromedriver-win64*
+chromedriver-win64/
+chromedriver-win64/*
