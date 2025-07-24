@@ -23,6 +23,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+usr = getpass.getuser()
+
 
 class dataParser:
     targetUrl = "https://www.linkedin.com/jobs/search/?currentJobId=4137578675&keywords=software%20engineer&origin=JOBS_HOME_SEARCH_BUTTON&refresh=true"
@@ -37,7 +39,7 @@ class dataParser:
             print("-" * 175)
 
     def parseOutJobListings(self):
-        usr = getpass.getuser()
+        global usr
         chromedriver_path = (
             f"C:\\Users\\{usr}\\Downloads\\chromedriver-win64\\chromedriver.exe"
         )
@@ -67,12 +69,48 @@ class dataParser:
             driver.execute_script("arguments[0].focus();", modalSection)
             modalWait = WebDriverWait(modalSection, 10)
             time.sleep(5)
+            print("Past initial phase")
             # signInBtn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.sign-in-modal__outlet-btn")))
-            signInBtn = wait.until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "button.sign-in-modal__outlet-btn")
+            time.sleep(5)
+            signinIframe = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "iframe"))
+            )
+            driver.switch_to.frame(signinIframe)
+            buttons = WebDriverWait(driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.XPATH, "//span[contains(normalize-space(.), 'Continue with')]")
                 )
             )
+            # buttons = driver.find_elements(By.XPATH, "//*")
+            for idx, button in enumerate(buttons):
+                if button.text.strip() == "":
+                    continue
+                print(f"{button.tag_name} {idx}: '{button.text.strip()}'")
+                button.click()
+                # while button:
+                #     if button.tag_name != "html" and button:
+                #         bparent = button.find_element(By.XPATH, "..")
+                #         print(
+                #             f"parent - {bparent.tag_name} {idx}: '{bparent.text.strip()}'"
+                #         )
+                #         button = bparent
+                #
+                #     else:
+                #         button = None
+                #
+            signInBtn = wait.until(
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        "//button[.//span[normalize-space()='Continue with Google']]",
+                    )
+                )
+            )
+            # signInBtn = wait.until(
+            #     EC.presence_of_element_located(
+            #         (By.CSS_SELECTOR, "button.sign-in-modal__outlet-btn")
+            #     )
+            # )
             if signInBtn.is_displayed() and signInBtn.is_enabled():
                 signInBtn.click()
             else:
@@ -83,12 +121,12 @@ class dataParser:
                 driver.execute_script("arguments[0].click();", signInBtn)
             usrInput = wait.until(
                 EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "input[name='session_key']")
+                    (By.CSS_SELECTOR, "input[id='base-sign-in-modal_session_key']")
                 )
             )
             pswdInput = wait.until(
                 EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "input[name='session_password']")
+                    (By.CSS_SELECTOR, "input[id='base-sign-in-modal_session_password']")
                 )
             )
             driver.execute_script(
@@ -208,7 +246,6 @@ class job:
         self.experience = []  # word list
 
     def parseMetaData(self):
-        pass
         searchButton = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.NAME, "btnK"))
         )
@@ -242,7 +279,10 @@ class programmerLookingForWork:
             self.recommendation = f.read()
 
     def craftPerfectResume(self):
-        chromedriver_path = "C:\\Users\\E08802\\Downloads\\chromedriver-win64_latest\\chromedriver-win64\\chromedriver.exe"
+        global usr
+        chromedriver_path = (
+            f"C:\\Users\\{usr}\\Downloads\\chromedriver-win64\\chromedriver.exe"
+        )
         chrome_service = ChromeService(executable_path=chromedriver_path)
         chrome_options = Options()
         # chrome_options.add_argument("--disable-extensions")
