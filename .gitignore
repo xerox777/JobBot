@@ -1,0 +1,8 @@
+# Ignore Environment/Configuration Variables
+config.yaml
+.env
+# Ignore Python Cache
+__pychace__/
+*.pyc
+
+venv/
