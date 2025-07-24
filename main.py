@@ -38,7 +38,10 @@ class dataParser:
 
     def parseOutJobListings(self):
         usr = getpass.getuser()
-        chromedriver_path = f"C:\\Users\\{usr}\\Downloads\\chromedriver-win64_latest\\chromedriver-win64\\chromedriver.exe"
+        chromedriver_path = (
+            f"C:\\Users\\{usr}\\Downloads\\chromedriver-win64\\chromedriver.exe"
+        )
+        print(f"chromedriver_path:{chromedriver_path}")
         chrome_service = ChromeService(executable_path=chromedriver_path)
         chrome_options = Options()
         # chrome_options.add_argument("--disable-extensions")
